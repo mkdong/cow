@@ -5,7 +5,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
-	ss "github.com/shadowsocks/shadowsocks-go/shadowsocks"
+	ss "github.com/shadowsocks/go-shadowsocks2/core"
 	"hash/crc32"
 	"io"
 	"math/rand"
@@ -367,7 +367,7 @@ type shadowsocksParent struct {
 	server string
 	method string // method and passwd are for upgrade config
 	passwd string
-	cipher *ss.Cipher
+	cipher ss.Cipher
 }
 
 type shadowsocksConn struct {
@@ -402,7 +402,9 @@ func (sp *shadowsocksParent) genConfig() string {
 func (sp *shadowsocksParent) initCipher(method, passwd string) {
 	sp.method = method
 	sp.passwd = passwd
-	cipher, err := ss.NewCipher(method, passwd)
+	// PickCihper retruns a structure containing the pointer to the cipher,
+	//  thus we can pass by value here.
+	cipher, err := ss.PickCipher(method, nil, passwd)
 	if err != nil {
 		Fatal("create shadowsocks cipher:", err)
 	}
@@ -410,7 +412,7 @@ func (sp *shadowsocksParent) initCipher(method, passwd string) {
 }
 
 func (sp *shadowsocksParent) connect(url *URL) (net.Conn, error) {
-	c, err := ss.Dial(url.HostPort, sp.server, sp.cipher.Copy())
+	c, err := ss.Dial(url.HostPort, sp.server, sp.cipher)
 	if err != nil {
 		errl.Printf("can't connect to shadowsocks parent %s for %s: %v\n",
 			sp.server, url.HostPort, err)
@@ -425,7 +427,7 @@ type cowParent struct {
 	server string
 	method string
 	passwd string
-	cipher *ss.Cipher
+	cipher ss.Cipher
 }
 
 type cowConn struct {
@@ -438,7 +440,9 @@ func (s cowConn) String() string {
 }
 
 func newCowParent(srv, method, passwd string) *cowParent {
-	cipher, err := ss.NewCipher(method, passwd)
+	// PickCihper retruns a structure containing the pointer to the cipher,
+	//  thus we can pass by value here.
+	cipher, err := ss.PickCipher(method, nil, passwd)
 	if err != nil {
 		Fatal("create cow cipher:", err)
 	}
@@ -466,7 +470,7 @@ func (cp *cowParent) connect(url *URL) (net.Conn, error) {
 	}
 	debug.Printf("connected to: %s via cow parent: %s\n",
 		url.HostPort, cp.server)
-	ssconn := ss.NewConn(c, cp.cipher.Copy())
+	ssconn := cp.cipher.StreamConn(c)
 	return cowConn{ssconn, cp}, nil
 }
 
