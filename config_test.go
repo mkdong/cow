@@ -95,7 +95,7 @@ func TestParseProxy(t *testing.T) {
 		t.Error("socks server address wrong, got:", sp.server)
 	}
 
-	parser.ParseProxy("ss://aes-256-cfb:foobar!@127.0.0.1:1080")
+	parser.ParseProxy("ss://aes-256-gcm:foobar!@127.0.0.1:1080")
 	cnt++
 	_, ok = pool.parent[cnt].ParentProxy.(*shadowsocksParent)
 	if !ok {

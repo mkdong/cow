@@ -38,9 +38,9 @@ Modify configuration file `~/.cow/rc` (OS X or Linux) or `rc.txt` (Windows). A s
     proxy = http://127.0.0.1:8080
     proxy = http://user:password@127.0.0.1:8080
     # shadowsocks parent proxy
-    proxy = ss://aes-128-cfb:password@1.2.3.4:8388
+    proxy = ss://aes-128-gcm:password@1.2.3.4:8388
     # cow parent proxy
-    proxy = cow://aes-128-cfb:password@1.2.3.4:8388
+    proxy = cow://aes-128-gcm:password@1.2.3.4:8388
 
 See [detailed configuration example](doc/sample-config/rc-en) for other features.
 

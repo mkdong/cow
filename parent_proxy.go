@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	ss "github.com/shadowsocks/go-shadowsocks2/core"
+	"github.com/shadowsocks/go-shadowsocks2/socks"
 	"hash/crc32"
 	"io"
 	"math/rand"
@@ -412,12 +413,25 @@ func (sp *shadowsocksParent) initCipher(method, passwd string) {
 }
 
 func (sp *shadowsocksParent) connect(url *URL) (net.Conn, error) {
-	c, err := ss.Dial(url.HostPort, sp.server, sp.cipher)
+	if debug) {
+		debug.Println(url.HostPort, sp.server, sp.cipher)
+	}
+
+	rawAddr := socks.ParseAddr(url.HostPort)
+
+	c, err := ss.Dial("tcp", sp.server, sp.cipher)
 	if err != nil {
 		errl.Printf("can't connect to shadowsocks parent %s for %s: %v\n",
 			sp.server, url.HostPort, err)
 		return nil, err
 	}
+
+	if _, err = c.Write(rawAddr); err != nil {
+		errl.Printf("can't write to shadowsocks parent %s for %s: %v\n",
+			sp.server, url.HostPort, err)
+		return nil, err
+	}
+
 	debug.Println("connected to:", url.HostPort, "via shadowsocks:", sp.server)
 	return shadowsocksConn{c, sp}, nil
 }

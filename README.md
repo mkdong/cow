@@ -48,13 +48,13 @@ COW 的设计目标是自动化，理想情况下用户无需关心哪些网站�
     proxy = http://127.0.0.1:8080
     proxy = http://user:password@127.0.0.1:8080
     # shadowsocks 二级代理
-    proxy = ss://aes-128-cfb:password@1.2.3.4:8388
+    proxy = ss://aes-128-gcm:password@1.2.3.4:8388
     # cow 二级代理
-    proxy = cow://aes-128-cfb:password@1.2.3.4:8388
+    proxy = cow://aes-128-gcm:password@1.2.3.4:8388
 
 使用 cow 协议的二级代理需要在国外服务器上安装 COW，并使用如下配置：
 
-    listen = cow://aes-128-cfb:password@0.0.0.0:8388
+    listen = cow://aes-128-gcm:password@0.0.0.0:8388
 
 完成配置后启动 COW 并配置好代理即可使用。
 
