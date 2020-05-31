@@ -1,0 +1,14 @@
+[Unit]
+Description=COW: Climb Over the Wall http proxy
+After=network.target
+
+[Service]
+Type=simple
+PIDFile=/run/cow.pid
+ExecStart=/usr/local/bin/cow -rc /usr/local/etc/cow/rc
+#ExecStopPost=/usr/bin/rm -f /run/cow.pid
+User=cow
+Group=cow
+
+[Install]
+WantedBy=multi-user.target
