@@ -413,7 +413,7 @@ func (sp *shadowsocksParent) initCipher(method, passwd string) {
 }
 
 func (sp *shadowsocksParent) connect(url *URL) (net.Conn, error) {
-	if debug) {
+	if debug {
 		debug.Println(url.HostPort, sp.server, sp.cipher)
 	}
 

@@ -733,7 +733,7 @@ func (c *clientConn) getServerConn(r *Request) (*serverConn, error) {
 		return sv, nil
 	}
 	if debug {
-		debug.Printf("cli(%s) connPool no conn %s", c.RemoteAddr(), r.URL.HostPort)
+		debug.Printf("cli(%s) connPool no conn %s, create new one", c.RemoteAddr(), r.URL.HostPort)
 	}
 	return c.createServerConn(r, siteInfo)
 }
@@ -1194,12 +1194,16 @@ func (sv *serverConn) doConnect(r *Request, c *clientConn) (err error) {
 		sv.Close()
 	}()
 
-	// debug.Printf("doConnect: srv(%s)->cli(%s)\n", r.URL.HostPort, c.RemoteAddr())
+	if debug {
+		debug.Printf("doConnect: srv(%s)->cli(%s)\n", r.URL.HostPort, c.RemoteAddr())
+	}
 	err = copyServer2Client(sv, c, r)
 	if isErrRetry(err) {
 		srvStopped.notify()
 		<-done
-		// debug.Printf("doConnect: cli(%s)->srv(%s) stopped\n", c.RemoteAddr(), r.URL.HostPort)
+		if debug {
+			debug.Printf("doConnect: cli(%s)->srv(%s) stopped\n", c.RemoteAddr(), r.URL.HostPort)
+		}
 	} else {
 		// close client connection to force read from client in copyClient2Server return
 		c.Conn.Close()
